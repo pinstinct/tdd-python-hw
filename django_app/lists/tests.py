@@ -60,7 +60,7 @@ class ListAndItemModelsTest(TestCase):
 class ListViewTest(TestCase):
     def test_uses_list_template(self):
         list_ = List.objects.create()
-        response = self.client.get('/lists/{}/'.format(list_.id,))
+        response = self.client.get('/lists/{}/'.format(list_.id, ))
         self.assertTemplateUsed(response, 'lists/list.html')
 
     def test_displays_only_items_for_that_list(self):
@@ -74,7 +74,7 @@ class ListViewTest(TestCase):
         # 뷰 함수를 바로 호출하지 않고,
         # 장고의 TestCase 속성인 self.client를 사용한다.
         # 여기에 테스트할 URL을 .get한다.
-        response = self.client.get('/lists/{}/'.format(correct_list.id,))
+        response = self.client.get('/lists/{}/'.format(correct_list.id, ))
 
         # assertIn(response.content.decode())를 사용하지 않고,
         # 장고가 제공하는 assertContains 메서드를 사용한다.
@@ -102,4 +102,31 @@ class NewListTest(TestCase):
         )
         new_list = List.objects.first()
         # 장고가 제공하는 리디렉션 확인 헬퍼 함수
-        self.assertRedirects(response, '/lists/{}/'.format(new_list.id,))
+        self.assertRedirects(response, '/lists/{}/'.format(new_list.id, ))
+
+
+class NewItemTest(TestCase):
+    def test_can_save_a_POST_request_to_an_existing_list(self):
+        other_list = List.objects.create()
+        correct_list = List.objects.create()
+
+        self.client.post(
+            '/lists/{}/add_item'.format(correct_list.id),
+            data={'item_text': '기존 목록에 신규 아이템'}
+        )
+
+        self.assertEqual(Item.objects.count(), 1)
+        new_item = Item.objects.first()
+        self.assertEqual(new_item.text, '기존 목록에 신규 아이템')
+        self.assertEqual(new_item.list, correct_list)
+
+    def test_redirects_to_list_view(self):
+        other_list = List.objects.create()
+        correct_list = List.objects.create()
+
+        response = self.client.post(
+            '/lists/{}/add_item'.format(correct_list.id),
+            data={'item_text': '기존 목록에 신규 아이템'}
+        )
+
+        self.assertRedirects(response, '/lists/{}/'.format(correct_list.id, ))
