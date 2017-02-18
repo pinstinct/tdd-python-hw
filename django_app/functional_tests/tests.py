@@ -41,7 +41,7 @@ class NewVisitorTest(LiveServerTestCase):
         # '1: 공작깃털 사기' 아이템이 추가된다.
         inputbox.send_keys(Keys.ENTER)
         edith_list_url = self.browser.current_url
-        ## unittest에 부속된 헬퍼 함수로, 지정한 정규표현식과 문자열이 일치하는지 확
+        ## unittest에 부속된 헬퍼 함수로, 지정한 정규표현식과 문자열이 일치하는지 확인
         self.assertRegex(edith_list_url, '/lists/.+')
         self.check_for_row_in_list_table('1: 공작깃털 사기')
 
