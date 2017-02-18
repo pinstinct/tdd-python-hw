@@ -59,24 +59,30 @@ class ListAndItemModelsTest(TestCase):
 
 class ListViewTest(TestCase):
     def test_uses_list_template(self):
-        response = self.client.get('/lists/the-only-list-in-the-world/')
+        list_ = List.objects.create()
+        response = self.client.get('/lists/{}/'.format(list_.id,))
         self.assertTemplateUsed(response, 'lists/list.html')
 
-    def test_displays_all_items(self):
-        list_ = List.objects.create()
-        Item.objects.create(text='itemey 1', list=list_)
-        Item.objects.create(text='itemey 2', list=list_)
+    def test_displays_only_items_for_that_list(self):
+        correct_list = List.objects.create()
+        Item.objects.create(text='itemey 1', list=correct_list)
+        Item.objects.create(text='itemey 2', list=correct_list)
+        other_list = List.objects.create()
+        Item.objects.create(text='다른 목록 아이템 1', list=other_list)
+        Item.objects.create(text='다른 목록 아이템 2', list=other_list)
 
         # 뷰 함수를 바로 호출하지 않고,
         # 장고의 TestCase 속성인 self.client를 사용한다.
         # 여기에 테스트할 URL을 .get한다.
-        response = self.client.get('/lists/the-only-list-in-the-world/')
+        response = self.client.get('/lists/{}/'.format(correct_list.id,))
 
         # assertIn(response.content.decode())를 사용하지 않고,
         # 장고가 제공하는 assertContains 메서드를 사용한다.
         # 이 메소드는 응답 내용을 어떻게 처리해야 하는지 안다.
         self.assertContains(response, 'itemey 1')
         self.assertContains(response, 'itemey 2')
+        self.assertNotContains(response, '다른 목록 아이템 1')
+        self.assertNotContains(response, '다른 목록 아이템 2')
 
 
 class NewListTest(TestCase):
@@ -94,5 +100,6 @@ class NewListTest(TestCase):
             '/lists/new',
             data={'item_text': '신규 작업 아이템'}
         )
+        new_list = List.objects.first()
         # 장고가 제공하는 리디렉션 확인 헬퍼 함수
-        self.assertRedirects(response, 'lists/the-only-list-in-the-world/')
+        self.assertRedirects(response, '/lists/{}/'.format(new_list.id,))
