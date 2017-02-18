@@ -12,13 +12,14 @@ class HomePageTest(TestCase):
         found = resolve('/')
         self.assertEqual(found.func, home_page)
 
-    def test_home_page_returns_correct_html(self):
-        request = HttpRequest()
-        response = home_page(request)
-        self.assertTrue(response.content.startswith(b'<html>'))
-        self.assertIn(b'<title>To-Do lists</title>', response.content)
-        self.assertTrue(response.content.strip().endswith(b'</html>'))
+    # def test_home_page_returns_correct_html(self):
+    #     request = HttpRequest()
+    #     response = home_page(request)
+    #     self.assertTrue(response.content.startswith(b'<html>'))
+    #     self.assertIn(b'<title>To-Do lists</title>', response.content)
+    #     self.assertTrue(response.content.strip().endswith(b'</html>'))
 
+    # 리팩토링을 통해 뷰와 템플릿을 분리하면 위와 같은 방법으로 테스트코드를 작성할 필요가 없다.
     def test_home_page_returns_correct_html(self):
         request = HttpRequest()
         response = home_page(request)
