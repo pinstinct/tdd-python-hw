@@ -53,22 +53,12 @@ class HomePageTest(TestCase):
         # response이 HTTP 리디렉션을 하기 때문에 상태코드가 302가 되며,
         # 브라우저는 새로운 위치를 가리킨다.
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], '/')
+        self.assertEqual(response['location'], '/lists/the-only-list-in-the-world/')
 
     def test_home_page_only_saves_items_when_necessary(self):
         request = HttpRequest()
         home_page(request)
         self.assertEqual(Item.objects.count(), 0)
-
-    def test_home_page_displays_all_list_items(self):
-        Item.objects.create(text='itemey 1')
-        Item.objects.create(text='itemey 2')
-
-        request = HttpRequest()
-        response = home_page(request)
-
-        self.assertIn('itemey 1', response.content.decode())
-        self.assertIn('itemey 2', response.content.decode())
 
 
 class ItemModelTest(TestCase):
@@ -88,3 +78,24 @@ class ItemModelTest(TestCase):
         second_saved_item = saved_items[1]
         self.assertEqual(first_saved_item.text, '첫 번째 아이템')
         self.assertEqual(second_saved_item.text, '두 번째 아이템')
+
+
+class ListViewTest(TestCase):
+    def test_uses_list_template(self):
+        response = self.client.get('/lists/the-only-list-in-the-world/')
+        self.assertTemplateUsed(response, 'lists/list.html')
+
+    def test_displays_all_items(self):
+        Item.objects.create(text='itemey 1')
+        Item.objects.create(text='itemey 2')
+
+        # 뷰 함수를 바로 호출하지 않고,
+        # 장고의 TestCase 속성인 self.client를 사용한다.
+        # 여기에 테스트할 URL을 .get한다.
+        response = self.client.get('/lists/the-only-list-in-the-world/')
+
+        # assertIn(response.content.decode())를 사용하지 않고,
+        # 장고가 제공하는 assertContains 메서드를 사용한다.
+        # 이 메소드는 응답 내용을 어떻게 처리해야 하는지 안다.
+        self.assertContains(response, 'itemey 1')
+        self.assertContains(response, 'itemey 2')
