@@ -12,8 +12,11 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+ROOT_DIR = os.path.dirname(BASE_DIR)
+
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
 TEMPLATE_DIRS = (TEMPLATE_DIR,)
+STATIC_ROOT = os.path.join(ROOT_DIR, 'static_root')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
@@ -31,7 +34,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = (
-    'django.contrib.admin',
+    # 'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
