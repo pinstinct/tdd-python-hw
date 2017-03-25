@@ -1,4 +1,11 @@
-
+# Project custom 
+.idea/
+.conf-secret/
+static_root/
+_Dockerfile*
+django_app/static/css/
+bower_components/
+node_modules/
 
 # Created by https://www.gitignore.io/api/pycharm,python,django,macos
 
@@ -44,7 +51,6 @@ Temporary Items
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
 # User-specific stuff:
-.idea/
 .idea/workspace.xml
 .idea/tasks.xml
 
@@ -183,3 +189,8 @@ ENV/
 
 # End of https://www.gitignore.io/api/pycharm,python,django,macos
 
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
